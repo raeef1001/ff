@@ -19,7 +19,7 @@ const Chat = () => {
         };
       }, [transcript]);
 
-
+const[aiResponse,setAiResponse]=useState("");
   const [transcriptvoice, setTranscriptvoice] = useState("");
   const [mood, setmood] = useState("");
   const [moodAvailable, setMoodAvailable] = useState(false);
@@ -43,11 +43,11 @@ const Chat = () => {
   const [audioURL, setAudioURL] = useState("");
   const [recording, setRecording] = useState(false);
   const [allsent, setAllsent] = useState([
-    "http://srm.net/mp3/srm_buss_ii.mp3",
+  
     
   ]);
   const [allreceived, setAllreceived] = useState([
-    "http://srm.net/mp3/srm_buss_ii.mp3",
+  
     
   ]);
 
@@ -86,11 +86,42 @@ const Chat = () => {
     console.log(url);
     setAllsent([...allsent, url]);
     console.log(transcript);
+    handle();
 
   };
-
+  const handle = async () => {  
+   
+      try {
+        const response = await fetch("http://localhost:5000/voicechat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({  "userchat": transcript,mood:mood }),
+        });
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+       
+        const data = await response.json();
+        setAiResponse(data.content);
+        setAllreceived([...allreceived, data.content]);
+        console.log(data.content);
+     
+      
+      } catch (error) {
+        console.log(error.message);
+      }
  
-
+  };
+  const speak = (e) => {
+   
+  setSpeaking(!speaking);
+    const utterance = new SpeechSynthesisUtterance();
+    utterance.text = e;
+    speechSynthesis.speak(utterance)
+  };
+  const [speaking, setSpeaking] = useState(false);
   return (
     <div className=" ml-20  p-12">
       <div>
@@ -177,12 +208,9 @@ const Chat = () => {
               </audio>
             </div>
            {
-            allreceived[index+1] && (
-                <div className="my-24">
-                <audio controls className="">
-                  <source src={allreceived[index+1]} type="audio/mpeg" />
-                  Your browser does not support the audio element.
-                </audio>
+            allreceived[index] && (
+                <div className="my-24 w-[300px] p-4 rounded-3xl bg-gray-300 ">
+                    <button onClick={()=>speak( allreceived[index])}>{speaking ? "Pause" : "Start"}</button>
               </div>
             )
            }

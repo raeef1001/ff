@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import AudioPlayer from "./AudioPlayer";
 import VoiceInput from "./VoiceInput";
+import TextWithDynamicUnderline from "./Text";
 // import txtomp3 from 'text-to-mp3';
 // import fs from 'fs';
 const Voice = () => {
@@ -24,6 +25,13 @@ const Voice = () => {
     setmood("");
     setsubmitClicked(false);
     setResult("generate random text to practice your pronunciation");
+  };
+  const speak = (e) => {
+    e.preventDefault();
+  
+    const utterance = new SpeechSynthesisUtterance();
+    utterance.text = result;
+    speechSynthesis.speak(utterance)
   };
   const handleClick = async () => {
     if (moodAvailable && languageavailable) {
@@ -50,18 +58,20 @@ const Voice = () => {
       window.alert("Please upload an image and select a language");
     }
   };
-  const replaceWords = () => {
-    console.log("called");
-    let modifiedText = transcriptvoice;
-    for (const [key, value] of Object.entries(analyzeData)) {
-      modifiedText = modifiedText.replace(new RegExp("\\b" + key+ "\\b", "gi"), value);
-    }
-    setTranscriptvoice(modifiedText);
-    console.log(modifiedText);
-  };
+//   const replaceWords = () => {
+//     console.log("called");
+//     let modifiedText = transcriptvoice;
+//     for (const [key, value] of Object.entries(analyzeData)) {
+//       modifiedText = modifiedText.replace(new RegExp("\\b" + key+ "\\b", "gi"), value);
+//     }
+//     setTranscriptvoice(modifiedText);
+//     console.log(modifiedText);
+//   };
+
+
 
   const handleAnalyze = async () => {
-    // convertTextToMp3();
+   
   
     if (result && transcriptvoice) {
       setsubmitClicked(true);
@@ -80,8 +90,8 @@ const Voice = () => {
         const data = await response.json();
         setanalyzeData(data.content);
         console.log(data.content);
-        replaceWords();
-      
+        setAnalyzedataavailable(true);
+        
       } catch (error) {
         console.log(error.message);
       }
@@ -91,17 +101,6 @@ const Voice = () => {
   };
 
 
-    //   const convertTextToMp3 = async () => {
-    //     try {
-    //       const binaryStream = await txtomp3.getMp3(result);
-    //       const file = fs.createWriteStream("FileName.mp3");
-    //       file.write(binaryStream);
-    //       file.end();
-    //       setAudioFile("FileName.mp3");
-    //     } catch (err) {
-    //       console.log("Error", err);
-    //     }
-    //   };
   
    
  
@@ -191,21 +190,31 @@ const Voice = () => {
             >
               generate
             </button>
-            <audio controls  className="">
+            {/* <audio controls  className="">
               <source
                 src={audioFile}
                 type="audio/mpeg"
               />
               Your browser does not support the audio element.
-            </audio>
+            </audio> */}
+            <button
+              onClick={speak}
+              type="button"
+              class="  text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2 text-center me-2 m-4  dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800"
+            >
+              Speak
+            </button>
           </div>
         </div>
-        <div className="my-5 mx-3 w-[30vw]  text-center font-normal border-2 border-gray-400 p-5 rounded-md">
-          <div className="height">{transcriptvoice}</div>
+        <div className="my-5 mx-3 w-[30vw] overflow-hidden text-center font-small text-sm border-2 border-gray-400 p-5 rounded-md">
+          <div className="height">{!analyzedataavailable? transcriptvoice :analyzeData}</div>
+         
           <div className="">
-          <button onClick={handleAnalyze} type="button" class="text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800">Analyze</button>
-           
+            
+        
           </div>
+          <button onClick={handleAnalyze} type="button" class="mt-10 text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800">Analyze</button>
+           
         </div>
       </div>
 
@@ -213,6 +222,11 @@ const Voice = () => {
         <VoiceInput set={setTranscriptvoice}></VoiceInput>
         
       </div>
+      {/* {
+            analyzedataavailable && (
+                <TextWithDynamicUnderline text={transcriptvoice} phrases={analyzeData} />
+            )
+         } */}
     </div>
   );
 };

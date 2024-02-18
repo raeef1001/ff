@@ -1,6 +1,6 @@
 import './App.css';
 import Card from './components/Card';
-import Contact from './components/Contact';
+
 import Heading from './components/Heading';
 import Social from './components/Social';
 import Timeline from './components/Timeline';

@@ -14,7 +14,7 @@ const Heading = () => {
         <div className="">
          
           <h1 className="text-[2.25rem] md:text-[4.5rem] font-bold ">
-            GEMINI
+            NEBULA
           </h1>
         </div>
         <div>
